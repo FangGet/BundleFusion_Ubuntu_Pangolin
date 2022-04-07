@@ -168,6 +168,8 @@ RUN cd /root/ && git clone https://github.com/stevenlovegrove/Pangolin.git && \
     cmake .. && \
     make -j12 install
 
+# fix bug for Pangolin
+RUN sed -i "s|"GL/glew.h"|"/usr/include/GL/glew.h" |g" /usr/local/include/pangolin/gl/glplatform.h
 
 # install yaml cpp
 RUN apt install -y --no-install-recommends libyaml-cpp-dev python3-pip python3-setuptools
