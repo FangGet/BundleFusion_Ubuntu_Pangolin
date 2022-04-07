@@ -26,7 +26,7 @@ This code is tested under ubuntu16.04/GCC7/CUDA10.1 (GPU: RTX2060).
 Requirements:
 
 * CMake
-* Eigen 3.1.0
+* Eigen 3.3.0
 * NVIDIA CUDA 9.0/10.+
 * OpenCV
 

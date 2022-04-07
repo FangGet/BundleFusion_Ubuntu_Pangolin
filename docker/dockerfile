@@ -1,0 +1,220 @@
+FROM nvidia/cuda:10.1-cudnn7-devel-ubuntu16.04
+
+# Arguments
+ARG USER=initial
+ARG GROUP=initial
+ARG UID=1000
+ARG GID=${UID}
+ARG SHELL=/bin/bash
+
+# Install packages
+RUN apt-get update && apt install -y --no-install-recommends software-properties-common
+
+RUN apt-get update && add-apt-repository "deb http://security.ubuntu.com/ubuntu xenial-security main" && \
+    apt-get install -y --no-install-recommends \
+    wget curl ssh \
+    zsh terminator gnome-terminal git vim tig \
+    dbus-x11 libglu1-mesa-dev libegl1-mesa-dev libxext6 libxext-dev libx11-6 libx11-dev\
+    unzip \
+    yasm \
+    pkg-config \
+    libjpeg-dev \
+    libtiff5-dev \
+    libjasper-dev \
+    libpng12-dev \
+    libavcodec-dev \
+    libavformat-dev \
+    libswscale-dev \
+    libv4l-dev \
+    libatlas-base-dev \
+    gfortran \
+    libtbb2 \
+    libtbb-dev \
+    libpq-dev \
+    libpython-dev \
+    gdb \
+    rsync \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /root/
+
+WORKDIR /root/
+
+RUN git clone https://github.com/opencv/opencv.git && git clone https://github.com/opencv/opencv_contrib.git
+
+# install cmake
+RUN apt install -y software-properties-common lsb-release && \
+    wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null && \
+    apt-add-repository "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main" && \
+     apt update &&  apt install -y --no-install-recommends cmake
+
+RUN apt update && apt install -y --no-install-recommends build-essential libboost-all-dev
+
+# build eigen
+RUN wget https://gitlab.com/libeigen/eigen/-/archive/3.1.0/eigen-3.1.0.tar.gz && \
+    tar -xvzf eigen-3.1.0.tar.gz && cd eigen-3.1.0 && mkdir build && cd build && cmake .. && make install && \
+    cd ../../ && rm -rf eigen-3.1.0 && rm eigen-3.1.0.tar.gz
+
+RUN apt update && apt install -y --no-install-recommends libglew-dev \
+    pkg-config \
+    libgtk-3-dev \
+    libgtest-dev \
+    libgoogle-glog-dev \
+    google-mock \
+    libgflags-dev \
+    libavcodec-dev libavformat-dev libswscale-dev libv4l-dev \
+    libxvidcore-dev libx264-dev \
+    libatlas-base-dev \
+    libsuitesparse-dev \
+    qtdeclarative5-dev \
+    qt5-qmake \
+    pkg-config \
+    libqglviewer-dev \
+    freeglut3-dev pkg-config \
+    libxmu-dev libxi-dev \
+    libflann-dev
+
+# Build OpenCV
+RUN cd /root/opencv && git checkout 3.3.0 && cd ../opencv_contrib && git checkout 3.3.0 && \
+    cd /root/opencv && mkdir build && cd build && \
+    cmake \
+	  -DBUILD_TIFF=ON \
+	  -DBUILD_opencv_java=OFF \
+      -DOPENCV_EXTRA_MODULES_PATH=/root/opencv_contrib/modules \
+	  -DWITH_CUDA=OFF \
+	  -DENABLE_AVX=ON \
+	  -DWITH_OPENGL=ON \
+	  -DWITH_OPENCL=ON \
+	  -DWITH_IPP=ON \
+	  -DWITH_TBB=ON \
+	  -DWITH_EIGEN=ON \
+	  -DWITH_V4L=ON \
+	  -DBUILD_TESTS=OFF \
+	  -DBUILD_PERF_TESTS=OFF \
+	  -DCMAKE_BUILD_TYPE=RELEASE \
+	  -DBUILD_opencv_python3=ON \
+	  -DCMAKE_INSTALL_PREFIX=$(python3.6 -c "import sys; print(sys.prefix)") \
+	  -DPYTHON_EXECUTABLE=$(which python3.6) \
+	  -DPYTHON_INCLUDE_DIR=$(python3.6 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
+	  -DPYTHON_PACKAGES_PATH=$(python3.6 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") .. \
+    && make install \
+    && cd /root/ && rm -rf opencv && rm -rf opencv_contrib
+
+  #  \
+  #   libgl1-mesa-dev libwayland-dev libxkbcommon-dev wayland-protocols libegl1-mesa-dev \
+  #   libc++-dev libavcodec-dev libavutil-dev libavformat-dev libswscale-dev libavdevice-dev \
+  #   libjpeg-dev libpng-dev
+
+# build ceres
+# RUN cd /root/ && git clone https://ceres-solver.googlesource.com/ceres-solver && cd /root/ceres-solver/ && \
+#     mkdir ceres-bin && \
+#     cd ceres-bin && \
+#     cmake .. && \
+#     make -j12 install && \
+#     cd /root/ && rm -rf ceres-solver
+
+# build g2o
+# RUN cd /root/ && git clone https://github.com/RainerKuemmerle/g2o.git && \
+#     cd g2o && \
+#     git checkout b1ba729 && \
+#     mkdir build && \
+#     cd build && \
+#     cmake .. && \
+#     make -j12 install && \
+#     cd /root/ && rm -rf g2o
+    
+
+# vtk
+# RUN cd /root && wget http://www.vtk.org/files/release/8.1/VTK-8.1.1.tar.gz && \
+#     tar -zxvf VTK-8.1.1.tar.gz && \
+#     cd VTK-8.1.1 && \
+#     mkdir build && \
+#     cd build && \
+#     cmake .. && \
+#     make -j12 install
+
+# build pcl
+# RUN cd /root/ && wget https://github.com/PointCloudLibrary/pcl/archive/refs/tags/pcl-1.10.0.tar.gz && \
+#     tar xvzf pcl-1.10.0.tar.gz && cd pcl-pcl-1.10.0 && \
+#     mkdir build && \
+#     cd build && \
+#     cmake .. && \
+#     make -j12 install
+
+# # RK3566 toolchain
+# RUN cd /root/ && git clone git@git.zh.midea.com:rk3566-explorer/toolchain.git && \
+#     cd /root/toolchain/ && \
+#     tar xfv rockchip_rk356x_robot_xxxx.tar.lzma --lzma && \
+#     mv /root/toolchain /opt/
+
+
+# gtsam
+
+# RUN cd /root/ && git clone https://github.com/borglab/gtsam.git && \
+#     cd /root/gtsam/ && \
+#     git checkout a738529af9754c7a085903f90ae8559bbaa82e75 && \
+#     mkdir build && cd build && \
+#     cmake -DGTSAM_POSE3_EXPMAP=ON -DGTSAM_ROT3_EXPMAP=ON -DGTSAM_USE_SYSTEM_EIGEN=ON .. && \
+#     make -j12 && \
+#     make install
+
+
+# Pangolin
+RUN cd /root/ && git clone https://github.com/stevenlovegrove/Pangolin.git && \
+    cd /root/Pangolin/ && \
+    git checkout v0.6 && \
+    mkdir build && cd build && \
+    cmake .. && \
+    make -j12 install
+
+
+# install yaml cpp
+RUN apt install -y --no-install-recommends libyaml-cpp-dev python3-pip python3-setuptools
+
+# display
+RUN add-apt-repository ppa:savoury1/display && apt-get update && apt-get install -y --no-install-recommends dbus-x11 libglvnd0 libgl1 libglx0 libegl1 libxext6 libx11-6 mesa-utils
+
+RUN apt install -y --no-install-recommends libncurses5-dev libglu1-mesa libglu1-mesa-dev libglew libegl1-mesa-dev libfreeimage-dev
+
+# Env vars for the nvidia-container-runtime.
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
+
+# change passwd
+RUN echo 'root:midea123' | chpasswd
+
+# modify the sshd_config
+RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+
+ENV NOTVISIBLE "in users profile"
+
+RUN echo "export VISIBLE=now" >> /etc/profile
+
+RUN groupadd --gid 1000 midea && \
+    useradd --gid 1000 --uid 1000 -ms /bin/bash midea
+
+RUN echo 'midea:midea123' | chpasswd
+
+# copy entrypoint
+COPY entrypoint.bash /entrypoint.bash
+RUN chmod 777 /entrypoint.bash
+
+RUN mkdir -p /home/midea/.config/terminator
+RUN mkdir -p /root/.config/terminator
+COPY config/terminator/config /root/.config/terminator
+COPY config/terminator/config /home/midea/.config/terminator
+RUN chown -R midea:midea /home/midea/.config
+RUN chown -R root:root /root/.config
+
+USER midea
+
+# RUN pip3 install tqdm ruamel.yaml pyquaternion matplotlib tabulate
+
+USER root
+
+EXPOSE 22
+
+ENTRYPOINT ["/entrypoint.bash", "terminator"]
