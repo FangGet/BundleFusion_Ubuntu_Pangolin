@@ -1,0 +1,4 @@
+/home/ran/work/BundleFusion_Ubuntu_Pangolin/build/CMakeFiles/rebuild_cache.dir
+/home/ran/work/BundleFusion_Ubuntu_Pangolin/build/CMakeFiles/edit_cache.dir
+/home/ran/work/BundleFusion_Ubuntu_Pangolin/build/CMakeFiles/bundle_fusion_example.dir
+/home/ran/work/BundleFusion_Ubuntu_Pangolin/build/CMakeFiles/BundleFusion.dir

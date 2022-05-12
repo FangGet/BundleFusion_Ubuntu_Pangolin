@@ -8,7 +8,11 @@ This is an ubuntu porting project for [https://github.com/niessner/BundleFusion]
 alt="demo for BundleFusion_Ubuntu" width="720" height="540" /></a>
 </p>
 
+### Run the custom dataset
 
+```
+./bundle_fusion_example ../zParametersDefaultLige.txt ../zParametersBundlingLige.txt /mnt/Data/Datasets/bundlefusion/000003_scannet
+```
 
 ```
 @article{dai2017bundlefusion,
