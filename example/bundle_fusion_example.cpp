@@ -73,8 +73,8 @@ int main ( int argc, char** argv )
             std::cout<<"no image founded" << std::endl;
         }
 
-         cv::imshow ( "rgb_image", rgbImage );
-//         cv::imshow ( "depth_image", depthImage );
+        // cv::imshow ( "rgb_image", rgbImage );
+        // cv::imshow ( "depth_image", depthImage );
          char c = cv::waitKey ( 20 );
 
         if ( processInputRGBDFrame ( rgbImage,depthImage ) )
@@ -87,10 +87,15 @@ int main ( int argc, char** argv )
         }
     }
     
-    while(cv::waitKey (20) != 'q');
+    // while(cv::waitKey (20) != 'q');
 
+
+    auto meshPath = GlobalAppState::get().s_generateMeshDir + "/mesh.ply";
+    std::cout << "Saving mesh to " << meshPath << std::endl;
+    saveMeshIntoFile(meshPath, true);
 
     deinitBundleFusion();
 
+    std::cout << "Done!" << std::endl;
     return 0;
 }
