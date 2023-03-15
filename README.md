@@ -18,8 +18,37 @@ alt="demo for BundleFusion_Ubuntu" width="720" height="540" /></a>
   year={2017}
 }
 ```
+---
 
-## Installation
+## Docker Installation
+<b>Update 03/15/2023: We add Docker support for easy usage</b>
+Thanks @adizhol add the support for docker, now BundelFusion_Ubuntu_Pangolin can be deployed via docker
+
+Requirements:
+* [docker env](https://docs.docker.com/engine/install/ubuntu/)
+
+Find suitable docker image for cuda from here: [https://hub.docker.com/r/nvidia/cudagl/](https://hub.docker.com/r/nvidia/cudagl/)
+Recommanded:
+* nvidia/cudagl:11.4.0-devel-ubuntu20.04 (for CUDA 11)(test passed!)
+* nvidia/cudagl:10.1-devel-ubuntu18.04  (for CUDA 10)(test passed!)
+* nvidia/cudagl:10.0-devel-ubuntu16.04 (for CUDA 10)(test passed!)
+* nvidia/cudagl:9.1-devel-ubuntu16.04 (for CUDA 9)
+
+### Build:
+```
+docker build -t bundlefusion-cu10.0-cudagl:latest .
+```
+
+### Usage:
+```
+export DATASETS=path/to/dataset
+./run_docker.sh
+```
+
+---
+
+
+## Local Installation
 
 This code is tested under ubuntu16.04/GCC7/CUDA10.1 (GPU: RTX2060).
 

@@ -18,6 +18,7 @@ find_package (Threads)
 find_package (Eigen3 REQUIRED)
 find_package (OpenCV REQUIRED)
 list(APPEND CMAKE_INCLUDE_PATH "/usr/local/include")
+# remove this line if using 16.04
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 
 

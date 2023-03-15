@@ -1,6 +1,6 @@
 xhost local:docker
 
-docker run -v /home/azholkover/Downloads/office2_flat/:/app/data \
+docker run -v ${DATASETS}:/app/data \
 --rm --gpus all \
 -e DISPLAY=$DISPLAY \
 -v /tmp/.X11-unix:/tmp/.X11-unix:rw  \
@@ -9,6 +9,6 @@ docker run -v /home/azholkover/Downloads/office2_flat/:/app/data \
 --net=host \
 --volume="$HOME/.Xauthority:/root/.Xauthority:rw" \
 -it \
-bundlefusion-cu11.4-cudagl ./build/bundle_fusion_example ./zParametersDefault.txt ./zParametersBundlingDefault.txt data
+bundlefusion-cu10.0-cudagl:latest ./build/bundle_fusion_example ./zParametersDefault.txt ./zParametersBundlingDefault.txt data
 
 #./build/bundle_fusion_example ./zParametersDefault.txt ./zParametersBundlingDefault.txt data
