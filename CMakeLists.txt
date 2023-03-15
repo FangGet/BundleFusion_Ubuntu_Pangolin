@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 project(BundleFusion)
 
 set(CMAKE_BUILD_TYPE Release)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fpermissive -pthread -lrt -fPIC")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -fpermissive -pthread -lrt -fPIC")
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 option(VISUALIZATION "Build BundleFusion With Pangolin" ON)
@@ -11,12 +11,16 @@ find_package(CUDA REQUIRED)
 set(CUDA_USE_STATIC_CUDA_RUNTIME OFF)
 set(CUDA_SEPARABLE_COMPILATION ON)
 set(CUDA_PROPAGATE_HOST_FLAGS OFF)
-set(CUDA_NVCC_FLAGS -arch=sm_35;-std=c++11;-lm)
+set(CUDA_NVCC_FLAGS -arch=sm_35;-std=c++14;-lm)
 ADD_DEFINITIONS(-fpermissive)
 
 find_package (Threads)
 find_package (Eigen3 REQUIRED)
 find_package (OpenCV REQUIRED)
+list(APPEND CMAKE_INCLUDE_PATH "/usr/local/include")
+find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+
+
 
 file(GLOB_RECURSE cpp_file src/*.cpp)
 file(GLOB_RECURSE cu_file src/*.cu)
@@ -45,7 +49,7 @@ endif()
 include_directories(
   ${CUDA_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
-  ${EIGEN3_INCLUDE_DIR}
+  ${EIGEN3_INCLUDE_DIR}/
   ${PROJECT_SOURCE_DIR}/include/
   ${PROJECT_SOURCE_DIR}/include/mLib/include
   ${PROJECT_SOURCE_DIR}/include/mLibExternal
